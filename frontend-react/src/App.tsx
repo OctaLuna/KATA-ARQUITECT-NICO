@@ -1,23 +1,33 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import MainLayout from './components/MainLayout';
-import Personal from './pages/Personal';
-import Vacaciones from './pages/Vacaciones';
-import Contratos from './pages/Contratos';
-import Boletas from './pages/Boletas';
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
-function App() {
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ThemeProvider } from './context/ThemeContext';
+import { MainLayout } from './layout/MainLayout';
+import { Dashboard } from './features/Dashboard';
+import { EmployeesFeature } from './features/employees/EmployeesFeature';
+import { VacationsFeature } from './features/vacations/VacationsFeature';
+import { ContractsFeature } from './features/contracts/ContractsFeature';
+import { PayrollFeature } from './features/payroll/PayrollFeature';
+
+export default function App() {
   return (
-    <BrowserRouter>
-      <MainLayout>
+    <ThemeProvider>
+      <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Personal />} />
-          <Route path="/vacaciones" element={<Vacaciones />} />
-          <Route path="/contratos" element={<Contratos />} />
-          <Route path="/boletas" element={<Boletas />} />
+          <Route path="/" element={<MainLayout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="employees" element={<EmployeesFeature />} />
+            <Route path="vacations" element={<VacationsFeature />} />
+            <Route path="contracts" element={<ContractsFeature />} />
+            <Route path="payroll" element={<PayrollFeature />} />
+          </Route>
         </Routes>
-      </MainLayout>
-    </BrowserRouter>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 
-export default App;
