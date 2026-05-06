@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { FileDown, FileText } from 'lucide-react';
-import jsPDF from 'jspdf';
+import { ContractService } from '../../api/contractService';
 
 const schema = yup.object({
   employeeId: yup.string().required('Seleccione un empleado').default(''),
@@ -26,6 +26,8 @@ type FormData = {
 export function ContractsFeature() {
   const { employees, contracts, addContract } = useStore();
   const [previewData, setPreviewData] = useState<FormData | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
   const activeEmployees = employees.filter(e => e.status === true);
 
   const { register, handleSubmit, formState: { errors }, watch } = useForm<FormData>({
@@ -45,27 +47,38 @@ export function ContractsFeature() {
   const generatePDF = async () => {
     if (!previewData || !selectedEmployee) return;
 
+    setIsGenerating(true);
+    setApiError(null);
+
     try {
       await addContract({
         ...previewData,
       });
 
-      const doc = new jsPDF();
-      doc.setFontSize(16);
-      doc.text('CONTRATO INDIVIDUAL DE TRABAJO', 105, 20, { align: 'center' });
-      
-      doc.setFontSize(12);
-      doc.text(`En la ciudad, a los ${new Date().getDate()} días del mes.`, 20, 40);
-      doc.text(`Entre la empresa ARCA LTDA. y el Sr(a). ${selectedEmployee.fullName}.`, 20, 50);
-      
-      doc.text(`1. CARGO: El trabajador se desempeñará como ${selectedEmployee.position} en el área de ${selectedEmployee.area}.`, 20, 70, { maxWidth: 170 });
-      doc.text(`2. REMUNERACIÓN: El trabajador percibirá un salario mensual de $${previewData.salary}.`, 20, 90, { maxWidth: 170 });
-      doc.text(`3. FECHA DE INICIO: Las labores comenzarán el ${new Date(previewData.startDate).toLocaleDateString()}.`, 20, 110, { maxWidth: 170 });
-      doc.text(`4. PERIODO DE PRUEBA: El presente contrato está sujeto a un periodo de prueba de ${previewData.trialPeriod} meses.`, 20, 130, { maxWidth: 170 });
-      
-      doc.save(`Contrato_${selectedEmployee.fullName.replace(' ', '_')}.pdf`);
+      // Call Contract microservice on localhost:5002
+      const blob = await ContractService.generateContractPdf({
+        employeeName: selectedEmployee.fullName,
+        employeePosition: selectedEmployee.position,
+        employeeArea: selectedEmployee.area,
+        fecha_ingreso: previewData.startDate,
+        salario: previewData.salary,
+        tiempo_prueba: previewData.trialPeriod
+      });
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Contrato_${selectedEmployee.fullName.replace(' ', '_')}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
     } catch (error) {
+      setApiError("Error de comunicación local con contract-service en localhost:5002");
       console.error(error);
+    } finally {
+      setIsGenerating(false);
+      setTimeout(() => setApiError(null), 8000);
     }
   };
 
@@ -73,8 +86,14 @@ export function ContractsFeature() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tighter">Generación de Contratos</h1>
-        <p className="text-muted-foreground mt-2">Panel de parametrización y exportación de contratos a PDF.</p>
+        <p className="text-muted-foreground mt-2">Panel de parametrización y exportación de contratos a PDF estructurados vía contract-service (localhost:5002).</p>
       </div>
+
+      {apiError && (
+        <div className="bg-yellow-500/10 border border-yellow-500/50 text-yellow-600 px-4 py-3 rounded-md text-sm font-medium mb-4 flex items-center">
+          <span className="font-bold mr-2">¡Aviso!</span> {apiError}
+        </div>
+      )}
 
       <div className="grid md:grid-cols-2 gap-6">
         <Card>
@@ -143,7 +162,7 @@ export function ContractsFeature() {
                     <li>Se establece un periodo de prueba de <strong>{previewData.trialPeriod} meses</strong> conforme a ley.</li>
                   </ul>
                 </div>
-                <Button onClick={generatePDF} className="w-full flex items-center justify-center">
+                <Button onClick={generatePDF} className="w-full flex items-center justify-center" isLoading={isGenerating}>
                   <FileDown className="mr-2 h-4 w-4" /> Exportar a PDF y Guardar
                 </Button>
               </div>
