@@ -25,7 +25,7 @@ export function PayrollFeature() {
     setIsGenerating(false);
   };
 
-  const activeEmployees = employees.filter(e => e.status === 'Active');
+  const activeEmployees = employees.filter(e => e.status === true);
 
   const downloadBoleta = (payslipId: string) => {
     const payslip = payslips.find(p => p.id === payslipId);
@@ -38,7 +38,7 @@ export function PayrollFeature() {
     doc.text('BOLETA DE PAGO - ARCA LTDA.', 105, 20, { align: 'center' });
     
     doc.setFontSize(12);
-    doc.text(`Funcionario: ${employee.name}`, 20, 40);
+    doc.text(`Funcionario: ${employee.fullName}`, 20, 40);
     doc.text(`Cargo: ${employee.position}`, 20, 50);
     doc.text(`Periodo: ${payslip.month}/${payslip.year}`, 20, 60);
     
@@ -47,7 +47,7 @@ export function PayrollFeature() {
     doc.text(`SALARIO BÁSICO:`, 20, 85);
     doc.text(`$${payslip.amount.toLocaleString()}`, 170, 85, { align: 'right' });
     
-    doc.save(`Boleta_${employee.name.replace(' ', '_')}_${payslip.month}_${payslip.year}.pdf`);
+    doc.save(`Boleta_${employee.fullName.replace(' ', '_')}_${payslip.month}_${payslip.year}.pdf`);
   };
 
   return (
@@ -103,7 +103,7 @@ export function PayrollFeature() {
                 return (
                   <tr key={payslip.id} className="border-b border-border hover:bg-muted/30">
                     <td className="px-6 py-4 font-mono text-xs">{payslip.id}</td>
-                    <td className="px-6 py-4 font-medium">{emp?.name || 'Desconocido'}</td>
+                    <td className="px-6 py-4 font-medium">{emp?.fullName || 'Desconocido'}</td>
                     <td className="px-6 py-4">{payslip.month} / {payslip.year}</td>
                     <td className="px-6 py-4 text-right">${payslip.amount.toLocaleString()}</td>
                     <td className="px-6 py-4 text-right">

@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet tool *)",
+      "Bash(dotnet ef *)",
+      "Bash(dotnet run *)",
+      "Bash(curl -s http://localhost:5001/api/employees)",
+      "Bash(python3 -m json.tool)",
+      "PowerShell(netstat -ano)",
+      "PowerShell(Stop-Process -Id 15740 -Force)",
+      "Bash(dotnet new *)",
+      "Bash(dotnet sln *)",
+      "Bash(dotnet add *)",
+      "Bash(rm -f WeatherForecast.cs Controllers/WeatherForecastController.cs)",
+      "Bash(rmdir Controllers)",
+      "Bash(mkdir -p Domain/Entities Domain/Interfaces Domain/Services Application/DTOs Application/UseCases Infrastructure/Persistence Infrastructure/Repositories Infrastructure/HttpClients API/Controllers)",
+      "Bash(dotnet build *)",
+      "Bash(curl -s http://localhost:5002/swagger/v1/swagger.json)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('Swagger OK -', d['info']['title']\\)\")"
+    ]
+  }
+}

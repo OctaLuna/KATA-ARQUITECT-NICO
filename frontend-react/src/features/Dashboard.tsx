@@ -7,7 +7,7 @@ import { differenceInYears } from 'date-fns';
 
 export function Dashboard() {
   const employees = useStore((state) => state.employees);
-  const activeEmployees = employees.filter(e => e.status === 'Active');
+  const activeEmployees = employees.filter(e => e.status === true);
   
   const vacationsAlerts = activeEmployees.filter(e => differenceInYears(new Date(), new Date(e.entryDate)) >= 1);
 
@@ -89,15 +89,15 @@ export function Dashboard() {
               <div key={emp.id} className="flex items-center justify-between border-border pb-4 last:pb-0">
                 <div className="flex items-center gap-4">
                   <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center text-lg font-bold text-muted-foreground uppercase">
-                    {emp.name.charAt(0)}{emp.name.split(' ')[1]?.charAt(0) || ''}
+                    {emp.fullName.charAt(0)}{emp.fullName.split(' ')[1]?.charAt(0) || ''}
                   </div>
                   <div>
-                    <p className="font-semibold text-lg">{emp.name}</p>
+                    <p className="font-semibold text-lg">{emp.fullName}</p>
                     <p className="text-sm text-muted-foreground font-medium">{emp.position}</p>
                   </div>
                 </div>
-                <div className={`px-4 py-1.5 text-xs font-semibold rounded-full ${emp.status === 'Active' ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>
-                  {emp.status}
+                <div className={`px-4 py-1.5 text-xs font-semibold rounded-full ${emp.status === true ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>
+                  {emp.status ? 'Activo' : 'Inactivo'}
                 </div>
               </div>
             ))}

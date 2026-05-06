@@ -1,15 +1,15 @@
 import { create } from 'zustand';
-
-export type EmployeeStatus = 'Active' | 'Inactive';
+import { EmployeeService } from '../api/employeeService';
 
 export interface Employee {
   id: string;
-  name: string;
+  fullName: string;
+  ci: string;
   area: string;
   position: string;
   salary: number;
   entryDate: string; // ISO String
-  status: EmployeeStatus;
+  status: boolean;
   vacationsBalance: number; // days
 }
 
@@ -34,15 +34,16 @@ export interface Payslip {
 interface AppState {
   theme: 'light' | 'dark';
   toggleTheme: () => void;
-  
+
   employees: Employee[];
+  loadEmployees: () => Promise<void>;
   addEmployee: (employee: Omit<Employee, 'id'>) => Promise<void>;
   updateEmployee: (id: string, employee: Partial<Employee>) => Promise<void>;
   deleteEmployee: (id: string) => Promise<void>;
-  
+
   contracts: Contract[];
   addContract: (contract: Omit<Contract, 'id' | 'generatedAt'>) => Promise<Contract>;
-  
+
   payslips: Payslip[];
   generatePayslips: (month: number, year: number) => Promise<void>;
 }
@@ -50,59 +51,80 @@ interface AppState {
 export const useStore = create<AppState>((set, get) => ({
   theme: 'dark',
   toggleTheme: () => set((state) => ({ theme: state.theme === 'light' ? 'dark' : 'light' })),
-  
+
   employees: [
     {
       id: '1',
-      name: 'Maria Gomez',
+      fullName: 'Maria Gomez',
+      ci: '1234567',
       area: 'Recursos Humanos',
       position: 'Directora',
       salary: 5000,
       entryDate: '2023-01-15T00:00:00Z',
-      status: 'Active',
+      status: true,
       vacationsBalance: 15,
     },
     {
       id: '2',
-      name: 'Carlos Perez',
+      fullName: 'Carlos Perez',
+      ci: '9876543',
       area: 'IT',
       position: 'Desarrollador Backend',
       salary: 4000,
       entryDate: '2024-06-01T00:00:00Z',
-      status: 'Active',
+      status: true,
       vacationsBalance: 0,
     }
   ],
+  loadEmployees: async () => {
+    try {
+      const data = await EmployeeService.getEmployees();
+      set({ employees: data });
+    } catch (e) {
+      // Fallback to local data already in state
+    }
+  },
   addEmployee: async (employee) => {
-    // Simulate API call
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        set((state) => ({
-          employees: [...state.employees, { ...employee, id: Math.random().toString(36).substring(7) }]
-        }));
-        resolve();
-      }, 500);
-    });
+    try {
+      const newEmployee = await EmployeeService.createEmployee(employee);
+      set((state) => ({
+        employees: [...state.employees, newEmployee]
+      }));
+    } catch (e) {
+      // Mock Fallback
+      set((state) => ({
+        employees: [...state.employees, { ...employee, id: Math.random().toString(36).substring(7) }]
+      }));
+      throw e;
+    }
   },
   updateEmployee: async (id, data) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        set((state) => ({
-          employees: state.employees.map(e => (e.id === id ? { ...e, ...data } : e))
-        }));
-        resolve();
-      }, 500);
-    });
+    try {
+      const updated = await EmployeeService.updateEmployee(id, data);
+      set((state) => ({
+        employees: state.employees.map(e => (e.id === id ? { ...e, ...updated } : e))
+      }));
+    } catch (e) {
+      // Mock Fallback
+      set((state) => ({
+        employees: state.employees.map(e => (e.id === id ? { ...e, ...data } : e))
+      }));
+      throw e;
+    }
   },
   deleteEmployee: async (id) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        set((state) => ({
-          employees: state.employees.map(e => (e.id === id ? { ...e, status: 'Inactive' } : e))
-        }));
-        resolve();
-      }, 500);
-    });
+    try {
+      await EmployeeService.deleteEmployee(id);
+      set((state) => ({
+        employees: state.employees.map(e => (e.id === id ? { ...e, status: false } : e))
+      }));
+    } catch (e) {
+      // Mock Fallback
+      set((state) => ({
+        employees: state.employees.map(e => (e.id === id ? { ...e, status: false } : e))
+      }));
+      throw e;
+    }
   },
 
   contracts: [],
@@ -148,7 +170,7 @@ export const useStore = create<AppState>((set, get) => ({
   generatePayslips: async (month, year) => {
     const { employees } = get();
     const activeEmployees = employees.filter(e => e.status === 'Active');
-    
+
     for (const e of activeEmployees) {
       try {
         const payload = {
@@ -166,11 +188,11 @@ export const useStore = create<AppState>((set, get) => ({
         console.error('Error creating payroll:', error);
       }
     }
-    
+
     // Refresh payslips from backend after generating
     const state = get() as any;
     if (state.fetchPayslips) {
-        await state.fetchPayslips();
+      await state.fetchPayslips();
     }
   }
 }));

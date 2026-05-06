@@ -1,0 +1,6 @@
+@ARCA.Vacation_HostAddress = http://localhost:5167
+
+GET {{ARCA.Vacation_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
