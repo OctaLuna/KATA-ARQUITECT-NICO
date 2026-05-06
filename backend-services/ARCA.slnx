@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/employee-service/" />
+  <Folder Name="/employee-service/src/">
+    <Project Path="employee-service/src/ARCA.Employee/ARCA.Employee.csproj" />
+  </Folder>
+</Solution>

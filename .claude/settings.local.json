@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet tool *)",
+      "Bash(dotnet ef *)",
+      "Bash(dotnet run *)",
+      "Bash(curl -s http://localhost:5001/api/employees)",
+      "Bash(python3 -m json.tool)",
+      "PowerShell(netstat -ano)",
+      "PowerShell(Stop-Process -Id 15740 -Force)"
+    ]
+  }
+}
