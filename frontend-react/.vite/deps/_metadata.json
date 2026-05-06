@@ -1,0 +1,118 @@
+{
+  "hash": "8b16f28f",
+  "configHash": "89e55c16",
+  "lockfileHash": "9d45fa69",
+  "browserHash": "ab039bb2",
+  "optimized": {
+    "react/jsx-dev-runtime": {
+      "src": "../../node_modules/react/jsx-dev-runtime.js",
+      "file": "react_jsx-dev-runtime.js",
+      "fileHash": "153aac35",
+      "needsInterop": true
+    },
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "3a76785f",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "20149d78",
+      "needsInterop": true
+    },
+    "react-router-dom": {
+      "src": "../../node_modules/react-router-dom/dist/index.mjs",
+      "file": "react-router-dom.js",
+      "fileHash": "66884bb4",
+      "needsInterop": false
+    },
+    "zustand": {
+      "src": "../../node_modules/zustand/esm/index.mjs",
+      "file": "zustand.js",
+      "fileHash": "0419a759",
+      "needsInterop": false
+    },
+    "lucide-react": {
+      "src": "../../node_modules/lucide-react/dist/esm/lucide-react.js",
+      "file": "lucide-react.js",
+      "fileHash": "db3a3931",
+      "needsInterop": false
+    },
+    "jspdf": {
+      "src": "../../node_modules/jspdf/dist/jspdf.es.min.js",
+      "file": "jspdf.js",
+      "fileHash": "144f310d",
+      "needsInterop": false
+    },
+    "date-fns": {
+      "src": "../../node_modules/date-fns/index.js",
+      "file": "date-fns.js",
+      "fileHash": "96e5b243",
+      "needsInterop": false
+    },
+    "react-hook-form": {
+      "src": "../../node_modules/react-hook-form/dist/index.esm.mjs",
+      "file": "react-hook-form.js",
+      "fileHash": "3438af40",
+      "needsInterop": false
+    },
+    "@hookform/resolvers/yup": {
+      "src": "../../node_modules/@hookform/resolvers/yup/dist/yup.mjs",
+      "file": "@hookform_resolvers_yup.js",
+      "fileHash": "50e3e621",
+      "needsInterop": false
+    },
+    "yup": {
+      "src": "../../node_modules/yup/index.esm.js",
+      "file": "yup.js",
+      "fileHash": "805ad5fc",
+      "needsInterop": false
+    },
+    "clsx": {
+      "src": "../../node_modules/clsx/dist/clsx.mjs",
+      "file": "clsx.js",
+      "fileHash": "82940525",
+      "needsInterop": false
+    },
+    "tailwind-merge": {
+      "src": "../../node_modules/tailwind-merge/dist/bundle-mjs.mjs",
+      "file": "tailwind-merge.js",
+      "fileHash": "6e853f67",
+      "needsInterop": false
+    },
+    "axios": {
+      "src": "../../node_modules/axios/index.js",
+      "file": "axios.js",
+      "fileHash": "bf69a57f",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "index.es-AAB7XZU7": {
+      "file": "index__es-AAB7XZU7.js"
+    },
+    "chunk-452EGUPG": {
+      "file": "chunk-452EGUPG.js"
+    },
+    "html2canvas.esm-G2ZJPYV4": {
+      "file": "html2canvas__esm-G2ZJPYV4.js"
+    },
+    "purify.es-OIKSFMOQ": {
+      "file": "purify__es-OIKSFMOQ.js"
+    },
+    "chunk-I4JI334F": {
+      "file": "chunk-I4JI334F.js"
+    },
+    "chunk-RTMGKO7Z": {
+      "file": "chunk-RTMGKO7Z.js"
+    },
+    "chunk-SITVF2AJ": {
+      "file": "chunk-SITVF2AJ.js"
+    },
+    "chunk-DC5AMYBS": {
+      "file": "chunk-DC5AMYBS.js"
+    }
+  }
+}
