@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  payroll-service:
+    build:
+      context: ./backend-services/payroll-service
+      dockerfile: Dockerfile
+    ports:
+      - "3004:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
