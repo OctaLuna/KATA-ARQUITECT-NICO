@@ -10,7 +10,7 @@ export function VacationsFeature() {
   const { employees, updateEmployee } = useStore();
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-  const activeEmployees = employees.filter(e => e.status === 'Active');
+  const activeEmployees = employees.filter(e => e.status === true);
 
   const getSeniority = (dateStr: string) => {
     const entryDate = new Date(dateStr);
@@ -53,7 +53,7 @@ export function VacationsFeature() {
               <CardContent className="pt-6">
                 <div className="flex justify-between items-start mb-6">
                   <div>
-                    <h3 className={`font-bold text-xl tracking-tight mb-1 ${hasOneYear ? "text-primary-foreground" : ""}`}>{emp.name}</h3>
+                    <h3 className={`font-bold text-xl tracking-tight mb-1 ${hasOneYear ? "text-primary-foreground" : ""}`}>{emp.fullName}</h3>
                     <p className={`text-sm font-medium ${hasOneYear ? "text-primary-foreground/80" : "text-muted-foreground"}`}>{emp.area}</p>
                   </div>
                   {hasOneYear ? (
@@ -78,7 +78,7 @@ export function VacationsFeature() {
                   <Button 
                     className="w-full bg-white text-primary hover:bg-white/90 text-sm font-bold shadow-xl shadow-black/10 transition-transform hover:scale-[1.02]" 
                     disabled={!needsVacationGrant}
-                    onClick={() => handleGrantVacation(emp.id, emp.name)}
+                    onClick={() => handleGrantVacation(emp.id, emp.fullName)}
                   >
                     Habilitar 15 Días
                   </Button>

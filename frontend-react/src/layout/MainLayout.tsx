@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { 
   Users, 
   Sun, 
@@ -12,10 +12,18 @@ import {
   Building2
 } from 'lucide-react';
 import { useStore } from '../store/useStore';
+import { useAuthStore } from '../store/useAuthStore';
 import { cn } from '../lib/utils';
 
 export function MainLayout() {
   const { theme, toggleTheme } = useStore();
+  const { user, logout } = useAuthStore();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   const navigation = [
     { name: 'Dashboard', href: '/', icon: LayoutDashboard },
@@ -62,13 +70,13 @@ export function MainLayout() {
         <div className="p-6 mt-auto">
           <div className="flex items-center p-3 rounded-2xl border border-border/50 bg-card">
             <div className="h-10 w-10 mx-auto rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold mr-3">
-              HR
+              {user?.name?.substring(0, 2).toUpperCase() || 'HR'}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-semibold text-sm truncate">Admin HR</p>
+              <p className="font-semibold text-sm truncate">{user?.name || 'Admin HR'}</p>
               <p className="text-xs text-muted-foreground truncate">Recursos Humanos</p>
             </div>
-            <button className="text-muted-foreground hover:text-foreground p-2">
+            <button onClick={handleLogout} className="text-muted-foreground hover:text-foreground p-2">
               <LogOut size={16} />
             </button>
           </div>
@@ -91,6 +99,9 @@ export function MainLayout() {
               className="p-3 rounded-full bg-muted hover:bg-muted/80 text-foreground transition-colors"
             >
               {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+            <button onClick={handleLogout} className="md:hidden flex items-center p-3 rounded-full bg-muted hover:bg-muted/80 text-foreground transition-colors">
+              <LogOut size={18} />
             </button>
           </div>
         </header>

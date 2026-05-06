@@ -26,7 +26,7 @@ type FormData = {
 export function ContractsFeature() {
   const { employees, contracts, addContract } = useStore();
   const [previewData, setPreviewData] = useState<FormData | null>(null);
-  const activeEmployees = employees.filter(e => e.status === 'Active');
+  const activeEmployees = employees.filter(e => e.status === true);
 
   const { register, handleSubmit, formState: { errors }, watch } = useForm<FormData>({
     resolver: yupResolver(schema) as any,
@@ -56,14 +56,14 @@ export function ContractsFeature() {
       
       doc.setFontSize(12);
       doc.text(`En la ciudad, a los ${new Date().getDate()} días del mes.`, 20, 40);
-      doc.text(`Entre la empresa ARCA LTDA. y el Sr(a). ${selectedEmployee.name}.`, 20, 50);
+      doc.text(`Entre la empresa ARCA LTDA. y el Sr(a). ${selectedEmployee.fullName}.`, 20, 50);
       
       doc.text(`1. CARGO: El trabajador se desempeñará como ${selectedEmployee.position} en el área de ${selectedEmployee.area}.`, 20, 70, { maxWidth: 170 });
       doc.text(`2. REMUNERACIÓN: El trabajador percibirá un salario mensual de $${previewData.salary}.`, 20, 90, { maxWidth: 170 });
       doc.text(`3. FECHA DE INICIO: Las labores comenzarán el ${new Date(previewData.startDate).toLocaleDateString()}.`, 20, 110, { maxWidth: 170 });
       doc.text(`4. PERIODO DE PRUEBA: El presente contrato está sujeto a un periodo de prueba de ${previewData.trialPeriod} meses.`, 20, 130, { maxWidth: 170 });
       
-      doc.save(`Contrato_${selectedEmployee.name.replace(' ', '_')}.pdf`);
+      doc.save(`Contrato_${selectedEmployee.fullName.replace(' ', '_')}.pdf`);
     } catch (error) {
       console.error(error);
     }
@@ -91,7 +91,7 @@ export function ContractsFeature() {
                 >
                   <option value="">Seleccione...</option>
                   {activeEmployees.map(emp => (
-                    <option key={emp.id} value={emp.id}>{emp.name} ({emp.position})</option>
+                    <option key={emp.id} value={emp.id}>{emp.fullName} ({emp.position})</option>
                   ))}
                 </select>
                 {errors.employeeId && <p className="mt-1 text-sm text-red-500">{errors.employeeId.message}</p>}
@@ -135,7 +135,7 @@ export function ContractsFeature() {
               <div className="space-y-6">
                 <div className="p-6 bg-card border border-border rounded-lg shadow-sm font-serif text-sm leading-relaxed whitespace-pre-wrap">
                   <h4 className="text-center font-bold mb-4 uppercase">Contrato Individual de Trabajo</h4>
-                  <p>Entre la empresa <strong>ARCA LTDA.</strong> y el Sr(a). <strong>{selectedEmployee.name}</strong>, se acuerda lo siguiente:</p>
+                  <p>Entre la empresa <strong>ARCA LTDA.</strong> y el Sr(a). <strong>{selectedEmployee.fullName}</strong>, se acuerda lo siguiente:</p>
                   <ul className="list-decimal pl-5 mt-4 space-y-2">
                     <li>El trabajador cumplirá funciones como <strong>{selectedEmployee.position}</strong>.</li>
                     <li>La fecha de inicio de actividades es el <strong>{new Date(previewData.startDate).toLocaleDateString()}</strong>.</li>
