@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Configured specifically for the Contract microservice
 export const contractApi = axios.create({
-  baseURL: 'http://localhost:5002/api/contracts',
+  baseURL: 'http://localhost:3001/api/contracts',
   headers: {
     'Content-Type': 'application/json',
   },

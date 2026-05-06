@@ -24,7 +24,7 @@ type FormData = {
 };
 
 export function ContractsFeature() {
-  const { employees, contracts, addContract } = useStore();
+  const { employees, addContract } = useStore();
   const [previewData, setPreviewData] = useState<FormData | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
@@ -51,34 +51,35 @@ export function ContractsFeature() {
     setApiError(null);
 
     try {
+      // 1. Guardar en el store local (opcional según tu lógica)
       await addContract({
         ...previewData,
       });
 
-      // Call Contract microservice on localhost:5002
+      // 2. Llamada al microservicio en localhost:3001
+      // Asegúrate de que los nombres de las propiedades coincidan con lo que espera tu backend
       const blob = await ContractService.generateContractPdf({
-        employeeName: selectedEmployee.fullName,
-        employeePosition: selectedEmployee.position,
-        employeeArea: selectedEmployee.area,
         fecha_ingreso: previewData.startDate,
-        salario: previewData.salary,
-        tiempo_prueba: previewData.trialPeriod
+        salario: `${previewData.salary} USD`, // Formateamos el string como espera el back
+        tiempo_prueba: `${previewData.trialPeriod} meses`
       });
 
-      const url = window.URL.createObjectURL(blob);
+      // 3. Descarga del archivo
+      const url = window.URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `Contrato_${selectedEmployee.fullName.replace(' ', '_')}.pdf`);
+      link.setAttribute('download', `Contrato_${selectedEmployee.fullName.replace(/\s+/g, '_')}.pdf`);
       document.body.appendChild(link);
       link.click();
+      
+      // Limpieza
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      setApiError("Error de comunicación local con contract-service en localhost:5002");
+      setApiError("Error de comunicación con el microservicio en el puerto 3001. Revisa que el backend esté corriendo.");
       console.error(error);
     } finally {
       setIsGenerating(false);
-      setTimeout(() => setApiError(null), 8000);
     }
   };
 
@@ -86,12 +87,12 @@ export function ContractsFeature() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tighter">Generación de Contratos</h1>
-        <p className="text-muted-foreground mt-2">Panel de parametrización y exportación de contratos a PDF estructurados vía contract-service (localhost:5002).</p>
+        <p className="text-muted-foreground mt-2">Panel de exportación vía contract-service (localhost:3001).</p>
       </div>
 
       {apiError && (
-        <div className="bg-yellow-500/10 border border-yellow-500/50 text-yellow-600 px-4 py-3 rounded-md text-sm font-medium mb-4 flex items-center">
-          <span className="font-bold mr-2">¡Aviso!</span> {apiError}
+        <div className="bg-red-500/10 border border-red-500/50 text-red-600 px-4 py-3 rounded-md text-sm font-medium mb-4 flex items-center">
+          <span className="font-bold mr-2">¡Error!</span> {apiError}
         </div>
       )}
 
@@ -162,8 +163,13 @@ export function ContractsFeature() {
                     <li>Se establece un periodo de prueba de <strong>{previewData.trialPeriod} meses</strong> conforme a ley.</li>
                   </ul>
                 </div>
-                <Button onClick={generatePDF} className="w-full flex items-center justify-center" isLoading={isGenerating}>
-                  <FileDown className="mr-2 h-4 w-4" /> Exportar a PDF y Guardar
+                <Button 
+                  onClick={generatePDF} 
+                  className="w-full flex items-center justify-center" 
+                  disabled={isGenerating}
+                >
+                  <FileDown className="mr-2 h-4 w-4" /> 
+                  {isGenerating ? 'Generando PDF...' : 'Exportar a PDF y Guardar'}
                 </Button>
               </div>
             ) : (
