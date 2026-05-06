@@ -74,7 +74,7 @@ export function ContractsFeature() {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      setApiError("Error de comunicación local con contract-service en localhost:5002");
+      setApiError("Error de comunicación con contract-service en localhost:5003. Verifique que el servicio esté corriendo.");
       console.error(error);
     } finally {
       setIsGenerating(false);
@@ -86,7 +86,7 @@ export function ContractsFeature() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tighter">Generación de Contratos</h1>
-        <p className="text-muted-foreground mt-2">Panel de parametrización y exportación de contratos a PDF estructurados vía contract-service (localhost:5002).</p>
+        <p className="text-muted-foreground mt-2">Panel de parametrización y exportación de contratos a PDF estructurados vía contract-service (localhost:5003).</p>
       </div>
 
       {apiError && (

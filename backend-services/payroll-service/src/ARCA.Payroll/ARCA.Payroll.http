@@ -1,0 +1,6 @@
+@ARCA.Payroll_HostAddress = http://localhost:5107
+
+GET {{ARCA.Payroll_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
