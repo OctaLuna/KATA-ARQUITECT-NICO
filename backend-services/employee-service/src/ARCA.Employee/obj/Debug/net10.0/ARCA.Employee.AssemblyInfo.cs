@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ARCA.Employee")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7cec98e462a886ebe0ecd26d049b6a6dd506709d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+897fc524692401b2c59accb41c3e871fd157952c")]
 [assembly: System.Reflection.AssemblyProductAttribute("ARCA.Employee")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ARCA.Employee")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

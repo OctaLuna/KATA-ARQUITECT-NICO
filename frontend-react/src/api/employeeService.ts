@@ -1,53 +1,57 @@
 import axios from 'axios';
 import type { Employee } from '../store/useStore';
 
-// Configured specifically for the Employee microservice running on port 5001
 export const employeeApi = axios.create({
   baseURL: 'http://localhost:5001/api/employees',
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  headers: { 'Content-Type': 'application/json' },
 });
+
+// Backend returns status as "Active"/"Inactive" string; we normalize to boolean
+function mapEmployee(raw: any): Employee {
+  return {
+    id: raw.id,
+    fullName: raw.fullName,
+    ci: raw.ci,
+    area: raw.area,
+    position: raw.position,
+    salary: raw.salary,
+    entryDate: raw.entryDate,
+    status: raw.status === 'Active' || raw.status === true,
+    vacationsBalance: 0, // managed by vacation-service, default 0
+  };
+}
 
 export const EmployeeService = {
   getEmployees: async (): Promise<Employee[]> => {
-    try {
-      const response = await employeeApi.get('');
-      return response.data;
-    } catch (error) {
-      console.warn("API de de empleados no está corriendo en localhost:5001, usando datos mock");
-      throw error;
-    }
+    const response = await employeeApi.get('');
+    return response.data.map(mapEmployee);
   },
 
   createEmployee: async (employeeData: Omit<Employee, 'id'>): Promise<Employee> => {
-    try {
-      const response = await employeeApi.post('', employeeData);
-      return response.data; // Expected 201 Created + Guid
-    } catch (error) {
-      console.warn("Fallo al crear empleado en microservicio:", error);
-      throw error;
-    }
+    // Backend CreateEmployeeRequest: fullName, ci, area, position, salary, entryDate
+    const payload = {
+      fullName: employeeData.fullName,
+      ci: employeeData.ci,
+      area: employeeData.area,
+      position: employeeData.position,
+      salary: employeeData.salary,
+      entryDate: employeeData.entryDate,
+    };
+    const response = await employeeApi.post('', payload);
+    return mapEmployee(response.data);
   },
 
   updateEmployee: async (id: string, employeeData: Partial<Employee>): Promise<Employee> => {
-    try {
-      // Assuming a PUT endpoint exists, or adapting to what's available
-      const response = await employeeApi.put(`/${id}`, employeeData);
-      return response.data;
-    } catch (error) {
-       console.warn("Fallo al modificar empleado en microservicio:", error);
-       throw error;
-    }
+    // Backend UpdateEmployeeRequest only accepts: area, position, salary
+    const payload: Record<string, unknown> = {};
+    if (employeeData.area !== undefined) payload.area = employeeData.area;
+    if (employeeData.position !== undefined) payload.position = employeeData.position;
+    if (employeeData.salary !== undefined) payload.salary = employeeData.salary;
+    const response = await employeeApi.put(`/${id}`, payload);
+    return mapEmployee(response.data);
   },
 
   deleteEmployee: async (id: string): Promise<void> => {
-    try {
-      // Expected 204 No Content -> Status goes to Inactive
-      await employeeApi.delete(`/${id}`);
-    } catch (error) {
-      console.warn("Fallo al eliminar empleado en microservicio:", error);
-      throw error;
-    }
-  }
+    await employeeApi.delete(`/${id}`);
+  },
 };

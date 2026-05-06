@@ -1,15 +1,24 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useStore } from '../store/useStore';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Users, FileText, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { differenceInYears } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
 
 export function Dashboard() {
   const employees = useStore((state) => state.employees);
-  const activeEmployees = employees.filter(e => e.status === true);
-  
-  const vacationsAlerts = activeEmployees.filter(e => differenceInYears(new Date(), new Date(e.entryDate)) >= 1);
+  const loadEmployees = useStore((state) => state.loadEmployees);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    loadEmployees();
+  }, [loadEmployees]);
+
+  const activeEmployees = employees.filter((e) => e.status === true);
+  const vacationsAlerts = activeEmployees.filter(
+    (e) => differenceInYears(new Date(), new Date(e.entryDate)) >= 1
+  );
 
   return (
     <div className="space-y-10">
@@ -22,17 +31,25 @@ export function Dashboard() {
           Administre el ciclo de vida del personal, vacaciones, y planillas de pago con un sistema ágil y seguro.
         </p>
         <div className="flex gap-4 relative z-10">
-          <Button size="lg" className="px-8">
+          <Button size="lg" className="px-8" onClick={() => navigate('/employees')}>
             Ir a Funcionarios
           </Button>
-          <Button size="lg" variant="outline" className="px-8 border-primary/20 hover:bg-primary/5 text-foreground">
-            Ver Reportes
+          <Button
+            size="lg"
+            variant="outline"
+            className="px-8 border-primary/20 hover:bg-primary/5 text-foreground"
+            onClick={() => navigate('/payroll')}
+          >
+            Ver Planillas
           </Button>
         </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="bg-gradient-to-br from-card to-card border-none ring-1 ring-border/50">
+        <Card
+          className="bg-gradient-to-br from-card to-card border-none ring-1 ring-border/50 cursor-pointer hover:ring-primary/30 transition-all"
+          onClick={() => navigate('/employees')}
+        >
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Funcionarios Activos</CardTitle>
             <div className="h-8 w-8 bg-blue-500/10 text-blue-500 rounded-full flex items-center justify-center">
@@ -47,8 +64,11 @@ export function Dashboard() {
             </p>
           </CardContent>
         </Card>
-        
-        <Card className="bg-primary text-primary-foreground border-none">
+
+        <Card
+          className="bg-primary text-primary-foreground border-none cursor-pointer hover:opacity-90 transition-all"
+          onClick={() => navigate('/vacations')}
+        >
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-primary-foreground/80">Alertas de Vacaciones</CardTitle>
             <div className="h-8 w-8 bg-white/20 text-white rounded-full flex items-center justify-center">
@@ -62,8 +82,8 @@ export function Dashboard() {
             </p>
           </CardContent>
         </Card>
-        
-        <Card className="bg-[#24223a] text-white border-none">
+
+        <Card className="bg-[#24223a] text-white border-none cursor-pointer hover:opacity-90 transition-all" onClick={() => navigate('/payroll')}>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-white/80">Total Registros</CardTitle>
             <div className="h-8 w-8 bg-white/10 rounded-full flex items-center justify-center text-white">
@@ -71,10 +91,8 @@ export function Dashboard() {
             </div>
           </CardHeader>
           <CardContent>
-             <div className="text-4xl font-bold tracking-tighter">{employees.length}</div>
-             <p className="text-sm text-white/80 mt-2">
-              Histórico en base de datos
-             </p>
+            <div className="text-4xl font-bold tracking-tighter">{employees.length}</div>
+            <p className="text-sm text-white/80 mt-2">Histórico en base de datos</p>
           </CardContent>
         </Card>
       </div>
@@ -84,24 +102,38 @@ export function Dashboard() {
           <CardTitle className="text-xl">Últimos Funcionarios Registrados</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-6">
-            {employees.slice(-4).reverse().map(emp => (
-              <div key={emp.id} className="flex items-center justify-between border-border pb-4 last:pb-0">
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center text-lg font-bold text-muted-foreground uppercase">
-                    {emp.fullName.charAt(0)}{emp.fullName.split(' ')[1]?.charAt(0) || ''}
+          {employees.length === 0 ? (
+            <p className="text-muted-foreground text-sm text-center py-4">No hay funcionarios registrados.</p>
+          ) : (
+            <div className="space-y-6">
+              {employees
+                .slice()
+                .reverse()
+                .slice(0, 4)
+                .map((emp) => (
+                  <div key={emp.id} className="flex items-center justify-between border-border pb-4 last:pb-0">
+                    <div className="flex items-center gap-4">
+                      <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center text-lg font-bold text-muted-foreground uppercase">
+                        {emp.fullName.charAt(0)}{emp.fullName.split(' ')[1]?.charAt(0) || ''}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-lg">{emp.fullName}</p>
+                        <p className="text-sm text-muted-foreground font-medium">{emp.position}</p>
+                      </div>
+                    </div>
+                    <div
+                      className={`px-4 py-1.5 text-xs font-semibold rounded-full ${
+                        emp.status === true
+                          ? 'bg-green-500/10 text-green-500'
+                          : 'bg-red-500/10 text-red-500'
+                      }`}
+                    >
+                      {emp.status ? 'Activo' : 'Inactivo'}
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-semibold text-lg">{emp.fullName}</p>
-                    <p className="text-sm text-muted-foreground font-medium">{emp.position}</p>
-                  </div>
-                </div>
-                <div className={`px-4 py-1.5 text-xs font-semibold rounded-full ${emp.status === true ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>
-                  {emp.status ? 'Activo' : 'Inactivo'}
-                </div>
-              </div>
-            ))}
-          </div>
+                ))}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

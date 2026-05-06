@@ -1,4 +1,8 @@
 <Solution>
+  <Folder Name="/contract-service/" />
+  <Folder Name="/contract-service/src/">
+    <Project Path="contract-service/src/ARCA.Contract/ARCA.Contract.csproj" />
+  </Folder>
   <Folder Name="/employee-service/" />
   <Folder Name="/employee-service/src/">
     <Project Path="employee-service/src/ARCA.Employee/ARCA.Employee.csproj" />
