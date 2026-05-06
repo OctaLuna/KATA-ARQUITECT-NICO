@@ -1,38 +1,34 @@
 import axios from 'axios';
 
-// Create an Axios instance with base configuration
-export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+// Shared interceptor: attaches JWT from localStorage to every request.
+// Each service has its own axios instance (different baseURL) but all use
+// this factory so the interceptors apply consistently.
+function createClient(baseURL: string) {
+  const client = axios.create({ baseURL, headers: { 'Content-Type': 'application/json' } });
 
-// Request interceptor for API calls
-api.interceptors.request.use(
-  (config) => {
-    // You could get a token from Zustand store or localStorage here
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+  client.interceptors.request.use((config) => {
+    const token = localStorage.getItem('arca_token');
+    if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+  });
 
-// Response interceptor for API calls
-api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  async (error) => {
-    // Handle global errors, like 401 Unauthorized
-    if (error.response && error.response.status === 401) {
-      // e.g. logout user
+  client.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      if (error.response?.status === 401) {
+        localStorage.removeItem('arca_token');
+        localStorage.removeItem('arca_user');
+        window.location.href = '/login';
+      }
+      return Promise.reject(error);
     }
-    return Promise.reject(error);
-  }
-);
+  );
+
+  return client;
+}
+
+export const authApi     = createClient('http://localhost:5000');
+export const employeeApi = createClient('http://localhost:5001');
+export const vacationApi = createClient('http://localhost:5002');
+export const contractApi = createClient('http://localhost:5003');
+export const payrollApi  = createClient('http://localhost:5004');

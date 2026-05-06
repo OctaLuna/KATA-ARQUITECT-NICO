@@ -70,11 +70,11 @@ export function MainLayout() {
         <div className="p-6 mt-auto">
           <div className="flex items-center p-3 rounded-2xl border border-border/50 bg-card">
             <div className="h-10 w-10 mx-auto rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold mr-3">
-              {user?.name?.substring(0, 2).toUpperCase() || 'HR'}
+              {user?.fullName?.substring(0, 2).toUpperCase() || 'HR'}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-semibold text-sm truncate">{user?.name || 'Admin HR'}</p>
-              <p className="text-xs text-muted-foreground truncate">Recursos Humanos</p>
+              <p className="font-semibold text-sm truncate">{user?.fullName || '—'}</p>
+              <p className="text-xs text-muted-foreground truncate">{user?.role || 'ARCA HR'}</p>
             </div>
             <button onClick={handleLogout} className="text-muted-foreground hover:text-foreground p-2">
               <LogOut size={16} />

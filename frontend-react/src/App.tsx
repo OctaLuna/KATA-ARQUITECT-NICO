@@ -22,6 +22,11 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  // Restore JWT session from localStorage on cold start
+  React.useEffect(() => {
+    useAuthStore.getState().restoreSession();
+  }, []);
+
   return (
     <ThemeProvider>
       <BrowserRouter>

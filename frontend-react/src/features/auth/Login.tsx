@@ -20,16 +20,16 @@ export function Login() {
     e.preventDefault();
     setIsLoading(true);
     setError('');
-    
+
     try {
-      const success = await login(username, password);
-      if (success) {
-        navigate('/');
-      } else {
+      await login(username, password);
+      navigate('/');
+    } catch (err: any) {
+      if (err?.response?.status === 401) {
         setError('Credenciales incorrectas. Verifique e intente nuevamente.');
+      } else {
+        setError('No se pudo conectar con auth-service (localhost:5000). Verifique que el servicio esté activo.');
       }
-    } catch (err) {
-      setError('Hubo un problema de conexión al servicio de autenticación.');
     } finally {
       setIsLoading(false);
     }

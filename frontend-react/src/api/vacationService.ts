@@ -1,9 +1,4 @@
-import axios from 'axios';
-
-export const vacationApi = axios.create({
-  baseURL: 'http://localhost:5002/api/vacations',
-  headers: { 'Content-Type': 'application/json' },
-});
+import { vacationApi } from './axios';
 
 export interface VacationBalance {
   id: string;
@@ -28,22 +23,22 @@ export interface CalculationResult {
 
 export const VacationService = {
   getAll: async (): Promise<VacationBalance[]> => {
-    const response = await vacationApi.get('');
+    const response = await vacationApi.get('/api/vacations');
     return response.data;
   },
 
   getByEmployee: async (employeeId: string): Promise<VacationBalance> => {
-    const response = await vacationApi.get(`/${employeeId}`);
+    const response = await vacationApi.get(`/api/vacations/${employeeId}`);
     return response.data;
   },
 
   calculate: async (): Promise<CalculationResult> => {
-    const response = await vacationApi.post('/calculate');
+    const response = await vacationApi.post('/api/vacations/calculate');
     return response.data;
   },
 
   useDays: async (employeeId: string, days: number): Promise<VacationBalance> => {
-    const response = await vacationApi.put(`/${employeeId}/use`, { days });
+    const response = await vacationApi.put(`/api/vacations/${employeeId}/use`, { days });
     return response.data;
   },
 };

@@ -13,6 +13,7 @@ export function VacationsFeature() {
   const [isCalculating, setIsCalculating] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [loadingIds, setLoadingIds] = useState<Set<string>>(new Set());
+  const [daysToUse, setDaysToUse] = useState<Record<string, number>>({});
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [apiError, setApiError] = useState<string | null>(null);
   const [isBackendAvailable, setIsBackendAvailable] = useState(true);
@@ -197,14 +198,30 @@ export function VacationsFeature() {
                 </div>
 
                 {hasOneYear ? (
-                  <Button
-                    className="w-full bg-white text-primary hover:bg-white/90 text-sm font-bold shadow-xl shadow-black/10 transition-transform hover:scale-[1.02]"
-                    disabled={!canUse || isLoadingThis}
-                    isLoading={isLoadingThis}
-                    onClick={() => handleUseDays(emp.id, emp.fullName, 5)}
-                  >
-                    {canUse ? 'Usar 5 Días de Vacación' : 'Sin saldo disponible'}
-                  </Button>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        min={1}
+                        max={availableDays}
+                        value={daysToUse[emp.id] ?? 1}
+                        onChange={(e) =>
+                          setDaysToUse((prev) => ({ ...prev, [emp.id]: Number(e.target.value) }))
+                        }
+                        disabled={!canUse || isLoadingThis}
+                        className="w-20 h-9 rounded-md border border-white/30 bg-white/10 text-white text-center text-sm font-bold focus:outline-none focus:ring-2 focus:ring-white/50"
+                      />
+                      <span className="text-sm text-primary-foreground/80">días</span>
+                    </div>
+                    <Button
+                      className="w-full bg-white text-primary hover:bg-white/90 text-sm font-bold shadow-xl shadow-black/10 transition-transform hover:scale-[1.02]"
+                      disabled={!canUse || isLoadingThis}
+                      isLoading={isLoadingThis}
+                      onClick={() => handleUseDays(emp.id, emp.fullName, daysToUse[emp.id] ?? 1)}
+                    >
+                      {canUse ? 'Registrar Días de Vacación' : 'Sin saldo disponible'}
+                    </Button>
+                  </div>
                 ) : (
                   <Button
                     variant="outline"

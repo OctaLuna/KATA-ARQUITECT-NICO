@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-const api = axios.create({ baseURL: 'http://localhost:5004' });
+import { payrollApi } from './axios';
 
 export interface BackendPayrollRecord {
   id: string;
@@ -27,11 +25,11 @@ export interface PayrollSummary {
 
 export const PayrollService = {
   generate: (year: number, month: number) =>
-    api.post<PayrollSummary>('/api/payroll/generate', { year, month }),
+    payrollApi.post<PayrollSummary>('/api/payroll/generate', { year, month }),
 
   getAll: () =>
-    api.get<BackendPayrollRecord[]>('/api/payroll'),
+    payrollApi.get<BackendPayrollRecord[]>('/api/payroll'),
 
   getByEmployee: (employeeId: string) =>
-    api.get<BackendPayrollRecord[]>(`/api/payroll/employee/${employeeId}`),
+    payrollApi.get<BackendPayrollRecord[]>(`/api/payroll/employee/${employeeId}`),
 };
