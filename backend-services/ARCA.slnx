@@ -3,4 +3,8 @@
   <Folder Name="/employee-service/src/">
     <Project Path="employee-service/src/ARCA.Employee/ARCA.Employee.csproj" />
   </Folder>
+  <Folder Name="/vacation-service/" />
+  <Folder Name="/vacation-service/src/">
+    <Project Path="vacation-service/src/ARCA.Vacation/ARCA.Vacation.csproj" />
+  </Folder>
 </Solution>
