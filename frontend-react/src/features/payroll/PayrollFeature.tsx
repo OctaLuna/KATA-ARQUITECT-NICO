@@ -8,9 +8,16 @@ import jsPDF from 'jspdf';
 
 export function PayrollFeature() {
   const { payslips, generatePayslips, employees } = useStore();
+  const fetchPayslips = useStore((state: any) => state.fetchPayslips);
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [year, setYear] = useState(new Date().getFullYear());
   const [isGenerating, setIsGenerating] = useState(false);
+
+  React.useEffect(() => {
+    if (fetchPayslips) {
+      fetchPayslips();
+    }
+  }, [fetchPayslips]);
 
   const handleGenerate = async () => {
     setIsGenerating(true);

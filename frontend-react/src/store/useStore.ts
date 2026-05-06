@@ -123,26 +123,54 @@ export const useStore = create<AppState>((set, get) => ({
   },
 
   payslips: [],
+  fetchPayslips: async () => {
+    try {
+      const response = await fetch('http://localhost:3004/api/payrolls');
+      const data = await response.json();
+      if (data.success) {
+        const mappedPayslips = data.data.map((p: any) => {
+          const [month, year] = p.period.split('-');
+          return {
+            id: String(p.id),
+            employeeId: String(p.employeeId),
+            month: Number(month),
+            year: Number(year),
+            amount: p.netPay,
+            generatedAt: p.paymentDate
+          };
+        });
+        set({ payslips: mappedPayslips });
+      }
+    } catch (error) {
+      console.error('Error fetching payslips:', error);
+    }
+  },
   generatePayslips: async (month, year) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const { employees } = get();
-        const newPayslips: Payslip[] = employees
-          .filter(e => e.status === 'Active')
-          .map(e => ({
-            id: Math.random().toString(36).substring(7),
-            employeeId: e.id,
-            month,
-            year,
-            amount: e.salary,
-            generatedAt: new Date().toISOString(),
-          }));
-        
-        set((state) => ({
-          payslips: [...state.payslips, ...newPayslips]
-        }));
-        resolve();
-      }, 500);
-    });
+    const { employees } = get();
+    const activeEmployees = employees.filter(e => e.status === 'Active');
+    
+    for (const e of activeEmployees) {
+      try {
+        const payload = {
+          employeeId: e.id,
+          employeeName: e.name,
+          period: `${month}-${year}`,
+          baseSalary: e.salary,
+        };
+        await fetch('http://localhost:3004/api/payrolls', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      } catch (error) {
+        console.error('Error creating payroll:', error);
+      }
+    }
+    
+    // Refresh payslips from backend after generating
+    const state = get() as any;
+    if (state.fetchPayslips) {
+        await state.fetchPayslips();
+    }
   }
 }));
